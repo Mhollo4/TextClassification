@@ -1,17 +1,17 @@
 # TextClassification
 # Objective 
 implement an artificial neural network to automatically classify a set of non-functional requirements into its seperate categories as described below:
-Access control
-Maintainability
-Legal
-Look and feel
-Reliability
-Usability
-Operational 
-Recoverability 
-Privacy 
-Security
-Other nonfunctional
+Access control,
+Maintainability,
+Legal,
+Look and feel,
+Reliability,
+Usability,
+Operational,
+Recoverability,
+Privacy,
+Security,
+Other nonfunctional,
 
 # Implementation
 to implement this idea I utilized python and Jupyter notebook to compile and run the program. I took a series of steps which are later explained to complete this implementation.
