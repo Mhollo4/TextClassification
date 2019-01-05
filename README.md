@@ -42,12 +42,11 @@ We organize our data  into a bag of words for each sentence which is then compar
 # Iterate Test Code
 first I set up a sigmoid function and its derivative 
 
-//////////////////////////////////////////////////////////////////////////////////
 def f(x):
     return 1 / (1 + np.exp(-x))
 def f_deriv(x):
     return f(x) * (1 - f(x))
-/////////////////////////////////////////////////////////////////////////////////
+
     
 Randomly initialise the weights for each layer W(l)
 While iterations < iteration limit:
@@ -63,7 +62,7 @@ W(l)=W(l)–α[1mΔW(l)]
 b(l)=b(l)–α[1mΔb(l)]
 So the first step is to initialise the weights for each layer. To make it easy to organise the various layers, we’ll use Python dictionary objects (initialised by {}). Finally, the weights have to be initialised with random values – this is to ensure that the neural network will converge correctly during training. We use the numpy library random_sample function to do this. The weight initialisation code is shown below:
 
-///////////////////////////////////////////////////////////////////////////////////
+
 import numpy.random as r
 def setup_and_init_weights(nn_structure):
     W = {}
@@ -72,11 +71,11 @@ def setup_and_init_weights(nn_structure):
         W[l] = r.random_sample((nn_structure[l], nn_structure[l-1]))
         b[l] = r.random_sample((nn_structure[l],))
     return W, b
-//////////////////////////////////////////////////////////////////////////////////
+
 
 The next step is to set the mean accumulation values ΔW and Δb to zero (they need to be the same size as the weight and bias matrices):
 
-/////////////////////////////////////////////////////////////////////////////////
+
 def init_tri_values(nn_structure):
     tri_W = {}
     tri_b = {}
@@ -84,11 +83,10 @@ def init_tri_values(nn_structure):
         tri_W[l] = np.zeros((nn_structure[l], nn_structure[l-1]))
         tri_b[l] = np.zeros((nn_structure[l],))
     return tri_W, tri_b
-/////////////////////////////////////////////////////////////////////////////////    
-
+    
 If we now step into the gradient descent loop, the first step is to perform a feed forward pass through the network.
 
-/////////////////////////////////////////////////////////////////////////////////
+
 def feed_forward(x, W, b):
     h = {1: x}
     z = {}
@@ -102,11 +100,10 @@ def feed_forward(x, W, b):
         z[l+1] = W[l].dot(node_in) + b[l] # z^(l+1) = W^(l)*h^(l) + b^(l)  
         h[l+1] = f(z[l+1]) # h^(l) = f(z^(l)) 
     return h, z
-//////////////////////////////////////////////////////////////////////////////////
+
 
 Finally, we have to then calculate the output layer delta δ(nl) and any hidden layer delta values δ(l) to perform the backpropagation pass:
 
-/////////////////////////////////////////////////////////////////////////////////
 def calculate_out_layer_delta(y, h_out, z_out):
     # delta^(nl) = -(y_i - h_i^(nl)) * f'(z_i^(nl))
     return -(y-h_out) * f_deriv(z_out)
@@ -114,11 +111,10 @@ def calculate_out_layer_delta(y, h_out, z_out):
 def calculate_hidden_delta(delta_plus_1, w_l, z_l):
     # delta^(l) = (transpose(W^(l)) * delta^(l+1)) * f'(z^(l))
     return np.dot(np.transpose(w_l), delta_plus_1) * f_deriv(z_l)
-//////////////////////////////////////////////////////////////////////////////////
+
 
 Now we can put all the steps together into the final function:
 
-//////////////////////////////////////////////////////////////////////////////////
 def train_nn(nn_structure, X, y, iter_num=1500, alpha=0.25):
     W, b = setup_and_init_weights(nn_structure)
     cnt = 0
@@ -156,7 +152,7 @@ def train_nn(nn_structure, X, y, iter_num=1500, alpha=0.25):
         avg_cost_func.append(avg_cost)
         cnt += 1
     return W, b, avg_cost_func
-//////////////////////////////////////////////////////////////////////////////////////
+
 
 The function above deserves a bit of explanation. First, we aren’t setting a termination of the gradient descent process based on some change or precision of the cost function. Rather, we are just running it for a set number of iterations (1,500 in this case) and we’ll monitor how the average cost function changes as we progress through the training (avg_cost_func list in the above code). In each iteration of the gradient descent, we cycle through each training sample (range(len(y)) and perform the feed forward pass and then the backpropagation. The backpropagation step is an iteration through the layers starting at the output layer and working backwards – range(len(nn_structure), 0, -1). We calculate the average cost, which we are tracking during the training, at the output layer (l == len(nn_structure)). We also update the mean accumulation values, ΔW and Δb, designated as tri_W and tri_b, for every layer apart from the output layer (there are no weights connecting the output layer to any further layer).
 
